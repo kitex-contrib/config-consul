@@ -3,17 +3,27 @@ package consul
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type ConfigType string
 
 const (
-	JSON                         ConfigType = "json"
-	YAML                         ConfigType = "yaml"
-	HCL                          ConfigType = "hcl"
-	ConsulDefaultConfigServerURL            = "127.0.0.1:8500"
-	ConsulDefaultDateCenter                 = "dc1"
+	JSON                      ConfigType = "json"
+	YAML                      ConfigType = "yaml"
+	HCL                       ConfigType = "hcl"
+	ConsulDefaultConfigAddr              = "127.0.0.1:8500"
+	ConsulDefaultConfiGPrefix            = "/KitexConfig"
+	ConsulDefaultTimeout                 = 5 * time.Second
+	ConsulDefaultDataCenter              = "dc1"
+	ConsulDefaultClientPath              = "{{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}}"
+	ConsulDefaultServerPath              = "{{.ServerServiceName}}/{{.Category}}"
 )
+
+var _ ConfigParser = &parser{}
+
+// CustomFunction use for customize the config parameters.
+type CustomFunction func(*Key)
 
 type ConfigParamConfig struct {
 	Category          string
@@ -22,7 +32,7 @@ type ConfigParamConfig struct {
 }
 
 type ConfigParser interface {
-	Decode(data string, config interface{}) error
+	Decode(kind ConfigType, data string, config interface{}) error
 }
 
 type parser struct{}
@@ -38,4 +48,8 @@ func (p *parser) Decode(kind ConfigType, data string, config interface{}) error 
 	default:
 		return fmt.Errorf("unsupported config data type %s", kind)
 	}
+}
+
+func defaultConfigParse() ConfigParser {
+	return &parser{}
 }
