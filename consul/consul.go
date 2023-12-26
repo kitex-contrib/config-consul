@@ -13,14 +13,10 @@ import (
 	"time"
 )
 
-const (
-	RetryConfigName          = "retry"
-	RpcTimeoutConfigName     = "rpc_timeout"
-	CircuitBreakerConfigName = "circuit_break"
-	LimiterConfigName        = "limit"
-)
+const WatchByKey = "key"
 
 type Key struct {
+	Type   ConfigType
 	Prefix string
 	Path   string
 }
@@ -37,7 +33,7 @@ type Client interface {
 	SetParser(configParser ConfigParser)
 	ClientConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error)
 	ServerConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error)
-	RegisterConfigCallback(lconfig *ListenConfig, uniqueID int64, callback func(string, ConfigParser))
+	RegisterConfigCallback(key string, uniqueID int64, callback func(string, ConfigParser))
 	DeregisterConfig(key string, uniqueID int64)
 }
 
@@ -57,6 +53,7 @@ type Options struct {
 
 type client struct {
 	consulCli          *api.Client
+	lconfig            *ListenConfig
 	parser             ConfigParser
 	consulTimeout      time.Duration
 	prefixTemplate     *template.Template
@@ -110,7 +107,14 @@ func NewClient(opts Options) (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	lconfig := &ListenConfig{
+		Type:       WatchByKey,
+		Datacenter: opts.DataCenter,
+		Token:      opts.Token,
+		ConsulAddr: opts.Addr,
+		Namespace:  opts.NamespaceId,
+		Partition:  opts.Partition,
+	}
 	c := &client{
 		consulCli:          consulClient,
 		parser:             opts.ConfigParser,
@@ -118,6 +122,7 @@ func NewClient(opts Options) (Client, error) {
 		prefixTemplate:     prefixTemplate,
 		serverPathTemplate: serverNameTemplate,
 		clientPathTemplate: clientNameTemplate,
+		lconfig:            lconfig,
 		cancelMap:          make(map[string]context.CancelFunc),
 	}
 	return c, nil
@@ -142,8 +147,7 @@ func (c *client) ServerConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction
 //  2. ServerPath: {{.ServerServiceName}}/{{.Category}} by default.
 //     ClientPath: {{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}} by default.
 func (c *client) configParam(cpc *ConfigParamConfig, t *template.Template, cfs ...CustomFunction) (Key, error) {
-	param := Key{}
-
+	param := Key{Type: JSON}
 	var err error
 	param.Path, err = c.render(cpc, t)
 	if err != nil {
@@ -170,29 +174,30 @@ func (c *client) render(cpc *ConfigParamConfig, t *template.Template) (string, e
 }
 
 // RegisterConfigCallback register the callback function to consul client.
-func (c *client) RegisterConfigCallback(lconfig *ListenConfig, uniqueID int64, callback func(string, ConfigParser)) {
+func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback func(string, ConfigParser)) {
 	go func() {
 		clientCtx, cancel := context.WithCancel(context.Background())
 		params := make(map[string]interface{})
-		params["datacenter"] = lconfig.Datacenter
-		params["token"] = lconfig.Token
-		params["type"] = lconfig.Type
-		c.registerCancelFunc(lconfig.Key, uniqueID, cancel)
+		params["datacenter"] = c.lconfig.Datacenter
+		params["token"] = c.lconfig.Token
+		params["type"] = c.lconfig.Type
+		c.lconfig.Key = key
+		c.registerCancelFunc(key, uniqueID, cancel)
 		w, err := watch.Parse(params)
 
 		if err != nil {
-			klog.Debugf("[consul] key:add listen for %s failed", lconfig.Key)
+			klog.Debugf("[consul] key:add listen for %s failed", key)
 		}
 		w.Handler = func(u uint64, i interface{}) {
 			kv := i.(*api.KVPair)
 			v := string(kv.Value)
-			klog.Debugf("[consul] config key:%s listen for %s failed", lconfig.Key)
+			klog.Debugf("[consul] config key:%s listen for %s failed", key)
 			callback(v, c.parser)
 		}
 		go func() {
-			err := w.Run(lconfig.ConsulAddr)
+			err := w.Run(c.lconfig.ConsulAddr)
 			if err != nil {
-				klog.Errorf("[consul] listen key: %s failed,error: %s", lconfig.Key, err.Error())
+				klog.Errorf("[consul] listen key: %s failed,error: %s", key, err.Error())
 			}
 		}()
 		for {
@@ -208,11 +213,11 @@ func (c *client) RegisterConfigCallback(lconfig *ListenConfig, uniqueID int64, c
 	_, cancel := context.WithTimeout(context.Background(), c.consulTimeout)
 	defer cancel()
 	kv := c.consulCli.KV()
-	get, _, err := kv.Get(lconfig.Key, &api.QueryOptions{
-		Namespace:  lconfig.Namespace,
-		Partition:  lconfig.Partition,
-		Datacenter: lconfig.Datacenter,
-		Token:      lconfig.Token,
+	get, _, err := kv.Get(c.lconfig.Key, &api.QueryOptions{
+		Namespace:  c.lconfig.Namespace,
+		Partition:  c.lconfig.Partition,
+		Datacenter: c.lconfig.Datacenter,
+		Token:      c.lconfig.Token,
 	})
 	if err != nil {
 		klog.Debugf("[consul] key: %s config get value failed", get.Key)

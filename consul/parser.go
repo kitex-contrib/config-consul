@@ -28,7 +28,7 @@ type CustomFunction func(*Key)
 type ConfigParamConfig struct {
 	Category          string
 	ClientServiceName string
-	ServerviceName    string
+	ServerServiceName string
 }
 
 type ConfigParser interface {
