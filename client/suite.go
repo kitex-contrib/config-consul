@@ -17,7 +17,6 @@ type ConsulClientSuite struct {
 	consulClient consul.Client
 	service      string
 	client       string
-	lconfig      *consul.ListenConfig
 	opts         utils.Options
 }
 

@@ -213,12 +213,7 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 	_, cancel := context.WithTimeout(context.Background(), c.consulTimeout)
 	defer cancel()
 	kv := c.consulCli.KV()
-	get, _, err := kv.Get(c.lconfig.Key, &api.QueryOptions{
-		Namespace:  c.lconfig.Namespace,
-		Partition:  c.lconfig.Partition,
-		Datacenter: c.lconfig.Datacenter,
-		Token:      c.lconfig.Token,
-	})
+	get, _, err := kv.Get(c.lconfig.Key, nil)
 	if err != nil {
 		klog.Debugf("[consul] key: %s config get value failed", get.Key)
 		return
