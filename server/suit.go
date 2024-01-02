@@ -10,7 +10,7 @@ const (
 	limiterConfigName = "limit"
 )
 
-// ConsulServerSuite etcd server config suite, configure limiter config dynamically from consul.
+// ConsulServerSuite consul server config suite, configure limiter config dynamically from consul.
 type ConsulServerSuite struct {
 	uid          int64
 	consulClient consul.Client

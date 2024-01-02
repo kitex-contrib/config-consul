@@ -8,7 +8,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/retry"
 )
 
-// WithRetryPolicy sets the retry policy from etcd configuration center.
+// WithRetryPolicy sets the retry policy from consul configuration center.
 func WithRetryPolicy(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
 		Category:          retryConfigName,
@@ -47,7 +47,7 @@ func initRetryContainer(kind consul.ConfigType, key, dest string,
 		rcs := map[string]*retry.Policy{}
 		err := parser.Decode(kind, data, &rcs)
 		if err != nil {
-			klog.Warnf("[consul] %s client etcd retry: unmarshal data %s failed: %s, skip...", key, data, err)
+			klog.Warnf("[consul] %s client consul retry: unmarshal data %s failed: %s, skip...", key, data, err)
 			return
 		}
 		set := utils.Set{}

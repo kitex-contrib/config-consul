@@ -41,8 +41,8 @@ func NewSuite(service, client string, cli consul.Client,
 // Options return a list client.Option
 func (s *ConsulClientSuite) Options() []client.Option {
 	opts := make([]client.Option, 0, 7)
+	opts = append(opts, WithCircuitBreaker(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	opts = append(opts, WithRetryPolicy(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	opts = append(opts, WithRPCTimeout(s.service, s.client, s.consulClient, s.uid, s.opts)...)
-	opts = append(opts, WithCircuitBreaker(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	return opts
 }

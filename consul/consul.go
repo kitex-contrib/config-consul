@@ -92,6 +92,7 @@ func NewClient(opts Options) (Client, error) {
 		Namespace:  opts.NamespaceId,
 		Partition:  opts.Partition,
 	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -181,19 +182,36 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 		params["datacenter"] = c.lconfig.Datacenter
 		params["token"] = c.lconfig.Token
 		params["type"] = c.lconfig.Type
+		params["key"] = key
 		c.lconfig.Key = key
+		kv := c.consulCli.KV()
+		get, _, err := kv.Get(c.lconfig.Key, nil)
+		if get == nil {
+			klog.Debugf("[consul]  key:%s doesn't exist", key)
+
+			_, err = kv.Put(&api.KVPair{
+				Key: c.lconfig.Key,
+			}, nil)
+			if err != nil {
+				klog.Errorf("[consul] Add key: %s failed,error: %s", key, err.Error())
+			}
+		}
 		c.registerCancelFunc(key, uniqueID, cancel)
 		w, err := watch.Parse(params)
-
 		if err != nil {
 			klog.Debugf("[consul] key:add listen for %s failed", key)
 		}
+		if w == nil {
+			klog.Debugf("[consul] key:add listen for %s failed", key)
+		}
+		klog.Debugf("[consul] key:add listen for %s successfully", key)
 		w.Handler = func(u uint64, i interface{}) {
 			kv := i.(*api.KVPair)
 			v := string(kv.Value)
-			klog.Debugf("[consul] config key:%s listen for %s failed", key)
+			klog.Debugf("[consul] config key: %s updated,value is %s", key, v)
 			callback(v, c.parser)
 		}
+
 		go func() {
 			err := w.Run(c.lconfig.ConsulAddr)
 			if err != nil {
@@ -213,12 +231,16 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 	_, cancel := context.WithTimeout(context.Background(), c.consulTimeout)
 	defer cancel()
 	kv := c.consulCli.KV()
-	get, _, err := kv.Get(c.lconfig.Key, nil)
+	get, _, err := kv.Get(key, nil)
+
 	if err != nil {
-		klog.Debugf("[consul] key: %s config get value failed", get.Key)
+		klog.Debugf("[consul] key: %s config get value failed", c.lconfig.Key)
 		return
 	}
-	if len(get.Value) == 0 {
+	if get == nil {
+		return
+	}
+	if get.Value == nil {
 		return
 	}
 	callback(string(get.Value), c.parser)

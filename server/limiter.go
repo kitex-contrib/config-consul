@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 )
 
-// WithLimiter sets the limiter config from etcd configuration center.
+// WithLimiter sets the limiter config from consul configuration center.
 func WithLimiter(dest string, consulClient consul.Client, uniqueID int64, opts utils.Options) server.Option {
 	param, err := consulClient.ServerConfigParam(&consul.ConfigParamConfig{
 		Category:          limiterConfigName,

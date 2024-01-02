@@ -9,7 +9,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpctimeout"
 )
 
-// WithRPCTimeout sets the RPC timeout policy from etcd configuration center.
+// WithRPCTimeout sets the RPC timeout policy from consul configuration center.
 func WithRPCTimeout(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
 		Category:          rpcTimeoutConfigName,

@@ -13,7 +13,7 @@ const (
 	YAML                      ConfigType = "yaml"
 	HCL                       ConfigType = "hcl"
 	ConsulDefaultConfigAddr              = "127.0.0.1:8500"
-	ConsulDefaultConfiGPrefix            = "/KitexConfig"
+	ConsulDefaultConfiGPrefix            = "KitexConfig"
 	ConsulDefaultTimeout                 = 5 * time.Second
 	ConsulDefaultDataCenter              = "dc1"
 	ConsulDefaultClientPath              = "{{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}}"
