@@ -202,7 +202,6 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 		get, _, err := kv.Get(c.lconfig.Key, nil)
 		if get == nil {
 			klog.Debugf("[consul]  key:%s doesn't exist", key)
-
 			_, err = kv.Put(&api.KVPair{
 				Key: c.lconfig.Key,
 			}, nil)
@@ -220,6 +219,9 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 		}
 		klog.Debugf("[consul] key:add listen for %s successfully", key)
 		w.Handler = func(u uint64, i interface{}) {
+			if i == nil {
+				return
+			}
 			kv := i.(*api.KVPair)
 			v := string(kv.Value)
 			klog.Debugf("[consul] config key: %s updated,value is %s", key, v)
@@ -237,8 +239,6 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 			case <-clientCtx.Done():
 				w.Stop()
 				return
-			default:
-
 			}
 		}
 	}()
