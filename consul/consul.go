@@ -199,10 +199,10 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 		params["key"] = key
 		c.lconfig.Key = key
 		kv := c.consulCli.KV()
-		get, _, err := kv.Get(c.lconfig.Key, nil)
+		get, _, _ := kv.Get(c.lconfig.Key, nil)
 		if get == nil {
 			klog.Debugf("[consul]  key:%s doesn't exist", key)
-			_, err = kv.Put(&api.KVPair{
+			_, err := kv.Put(&api.KVPair{
 				Key: c.lconfig.Key,
 			}, nil)
 			if err != nil {
@@ -234,12 +234,9 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 				klog.Errorf("[consul] listen key: %s failed,error: %s", key, err.Error())
 			}
 		}()
-		for {
-			select {
-			case <-clientCtx.Done():
-				w.Stop()
-				return
-			}
+		for range clientCtx.Done() {
+			w.Stop()
+			return
 		}
 	}()
 	_, cancel := context.WithTimeout(context.Background(), c.consulTimeout)
