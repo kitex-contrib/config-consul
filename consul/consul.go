@@ -17,14 +17,15 @@ package consul
 import (
 	"bytes"
 	"context"
-	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
-	"go.uber.org/zap"
 	"html/template"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/hashicorp/consul/api"
+	"github.com/hashicorp/consul/api/watch"
+	"go.uber.org/zap"
 )
 
 const WatchByKey = "key"
