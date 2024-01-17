@@ -50,7 +50,7 @@ func WithRetryPolicy(dest, src string, consulClient consul.Client, uniqueID int6
 	}
 }
 
-func initRetryContainer(kind consul.ConfigType, key, dest string,
+func initRetryContainer(configType consul.ConfigType, key, dest string,
 	consulClient consul.Client, uniqueID int64,
 ) *retry.Container {
 	retryContainer := retry.NewRetryContainerWithPercentageLimit()
@@ -60,7 +60,7 @@ func initRetryContainer(kind consul.ConfigType, key, dest string,
 	onChangeCallback := func(data string, parser consul.ConfigParser) {
 		// the key is method name, wildcard "*" can match anything.
 		rcs := map[string]*retry.Policy{}
-		err := parser.Decode(kind, data, &rcs)
+		err := parser.Decode(configType, data, &rcs)
 		if err != nil {
 			klog.Warnf("[consul] %s client consul retry: unmarshal data %s failed: %s, skip...", key, data, err)
 			return

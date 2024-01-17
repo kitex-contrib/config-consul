@@ -49,14 +49,14 @@ func WithRPCTimeout(dest, src string, consulClient consul.Client, uniqueID int64
 	}
 }
 
-func initRPCTimeoutContainer(kind consul.ConfigType, key, dest string,
+func initRPCTimeoutContainer(configType consul.ConfigType, key, dest string,
 	consulClient consul.Client, uniqueID int64,
 ) rpcinfo.TimeoutProvider {
 	rpcTimeoutContainer := rpctimeout.NewContainer()
 
 	onChangeCallback := func(data string, parser consul.ConfigParser) {
 		configs := map[string]*rpctimeout.RPCTimeout{}
-		err := parser.Decode(kind, data, &configs)
+		err := parser.Decode(configType, data, &configs)
 		if err != nil {
 			klog.Warnf("[consul] %s client consul rpc timeout: unmarshal data %s failed: %s, skip...", key, data, err)
 			return

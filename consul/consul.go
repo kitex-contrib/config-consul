@@ -38,7 +38,7 @@ type Key struct {
 type ListenConfig struct {
 	Key        string
 	Type       string
-	Datacenter string
+	DataCenter string
 	Token      string
 	ConsulAddr string
 	Namespace  string
@@ -124,7 +124,7 @@ func NewClient(opts Options) (Client, error) {
 	}
 	lconfig := &ListenConfig{
 		Type:       WatchByKey,
-		Datacenter: opts.DataCenter,
+		DataCenter: opts.DataCenter,
 		Token:      opts.Token,
 		ConsulAddr: opts.Addr,
 		Namespace:  opts.NamespaceId,
@@ -193,7 +193,7 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 	go func() {
 		clientCtx, cancel := context.WithCancel(context.Background())
 		params := make(map[string]interface{})
-		params["datacenter"] = c.lconfig.Datacenter
+		params["datacenter"] = c.lconfig.DataCenter
 		params["token"] = c.lconfig.Token
 		params["type"] = c.lconfig.Type
 		params["key"] = key

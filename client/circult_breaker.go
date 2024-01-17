@@ -58,11 +58,11 @@ func WithCircuitBreaker(dest, src string, consulClient consul.Client, uniqueID i
 
 // keep consistent when initialising the circuit breaker suit and updating
 // the circuit breaker policy.
-func genServiceCBKeyWithRPCInfo(ri rpcinfo.RPCInfo) string {
-	if ri == nil {
+func genServiceCBKeyWithRPCInfo(rpcInfo rpcinfo.RPCInfo) string {
+	if rpcInfo == nil {
 		return ""
 	}
-	return genServiceCBKey(ri.To().ServiceName(), ri.To().Method())
+	return genServiceCBKey(rpcInfo.To().ServiceName(), rpcInfo.To().Method())
 }
 
 func genServiceCBKey(toService, method string) string {
@@ -75,7 +75,7 @@ func genServiceCBKey(toService, method string) string {
 	return buf.String()
 }
 
-func initCircuitBreaker(kind consul.ConfigType, key, dest, src string,
+func initCircuitBreaker(configType consul.ConfigType, key, dest, src string,
 	consulClient consul.Client, uniqueID int64,
 ) *circuitbreak.CBSuite {
 	cb := circuitbreak.NewCBSuite(genServiceCBKeyWithRPCInfo)
@@ -84,7 +84,7 @@ func initCircuitBreaker(kind consul.ConfigType, key, dest, src string,
 	onChangeCallback := func(data string, parser consul.ConfigParser) {
 		set := utils.Set{}
 		configs := map[string]circuitbreak.CBConfig{}
-		err := parser.Decode(kind, data, &configs)
+		err := parser.Decode(configType, data, &configs)
 		if err != nil {
 			klog.Warnf("[consul] %s client consul circuit breaker: unmarshal data %s failed: %s, skip...", key, data, err)
 			return
