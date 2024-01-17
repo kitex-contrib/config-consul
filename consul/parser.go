@@ -48,11 +48,7 @@ type ConfigParamConfig struct {
 type ConfigParser interface {
 	Decode(configType ConfigType, data string, config interface{}) error
 }
-
 type parser struct{}
-type A struct {
-	Enable string
-}
 
 func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
 	switch configType {
