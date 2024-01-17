@@ -19,7 +19,6 @@ import (
 
 	"config-consul/consul"
 	"config-consul/utils"
-
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/limiter"
