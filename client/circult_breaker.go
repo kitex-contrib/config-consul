@@ -15,13 +15,14 @@
 package client
 
 import (
+	"strings"
+
 	"config-consul/consul"
 	"config-consul/utils"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/circuitbreak"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
-	"strings"
 )
 
 // WithCircuitBreaker sets the circuit breaker policy from consul configuration center.

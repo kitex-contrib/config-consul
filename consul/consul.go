@@ -106,7 +106,6 @@ func NewClient(opts Options) (Client, error) {
 		Namespace:  opts.NamespaceId,
 		Partition:  opts.Partition,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +240,6 @@ func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback fun
 	defer cancel()
 	kv := c.consulCli.KV()
 	get, _, err := kv.Get(key, nil)
-
 	if err != nil {
 		klog.Debugf("[consul] key: %s config get value failed", c.lconfig.Key)
 		return

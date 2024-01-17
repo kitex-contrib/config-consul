@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
+	"log"
+
 	"config-consul/consul"
 	consulserver "config-consul/server"
-	"context"
+
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
-	"log"
 )
 
 var _ api.Echo = &EchoImpl{}

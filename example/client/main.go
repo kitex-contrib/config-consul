@@ -1,16 +1,18 @@
 package main
 
 import (
+	"context"
+	"log"
+	"time"
+
 	consulclient "config-consul/client"
 	"config-consul/consul"
 	"config-consul/utils"
-	"context"
+
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/klog"
-	"log"
-	"time"
 )
 
 type configLog struct{}

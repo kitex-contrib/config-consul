@@ -15,13 +15,14 @@
 package server
 
 import (
+	"sync/atomic"
+
 	"config-consul/consul"
 	"config-consul/utils"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/limit"
 	"github.com/cloudwego/kitex/pkg/limiter"
 	"github.com/cloudwego/kitex/server"
-	"sync/atomic"
 )
 
 // WithLimiter sets the limiter config from consul configuration center.

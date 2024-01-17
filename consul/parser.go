@@ -52,12 +52,12 @@ type ConfigParser interface {
 type parser struct{}
 
 func (p *parser) Decode(kind ConfigType, data string, config interface{}) error {
-	//hclParser, err := hcl.Parse(hclString)
+	// hclParser, err := hcl.Parse(hclString)
 	switch kind {
 	case JSON, YAML:
 		return json.Unmarshal([]byte(data), config)
 	case HCL:
-		//待补充
+		// 待补充
 		return nil
 	default:
 		return fmt.Errorf("unsupported config data type %s", kind)
