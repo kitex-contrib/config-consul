@@ -17,6 +17,7 @@ package client
 import (
 	"config-consul/consul"
 	"config-consul/utils"
+
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/retry"
