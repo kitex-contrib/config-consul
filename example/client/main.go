@@ -1,13 +1,13 @@
 package main
 
 import (
+	"config-consul/consul"
+	"config-consul/utils"
 	"context"
 	"log"
 	"time"
 
 	consulclient "config-consul/client"
-	"config-consul/consul"
-	"config-consul/utils"
 
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"

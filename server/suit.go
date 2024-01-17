@@ -17,6 +17,7 @@ package server
 import (
 	"config-consul/consul"
 	"config-consul/utils"
+
 	"github.com/cloudwego/kitex/server"
 )
 

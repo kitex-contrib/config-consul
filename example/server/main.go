@@ -1,10 +1,10 @@
 package main
 
 import (
+	"config-consul/consul"
 	"context"
 	"log"
 
-	"config-consul/consul"
 	consulserver "config-consul/server"
 
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
