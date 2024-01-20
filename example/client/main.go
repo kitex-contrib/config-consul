@@ -57,7 +57,6 @@ func main() {
 		log.Fatal(err)
 	}
 	for {
-
 		req := &api.Request{Message: "my request"}
 		resp, err := client.Echo(context.Background(), req)
 		if err != nil {
