@@ -15,8 +15,8 @@
 package client
 
 import (
-	"config-consul/consul"
-	"config-consul/utils"
+	"github.com/kitex-contrib/config-consul/consul"
+	"github.com/kitex-contrib/config-consul/utils"
 
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/klog"
