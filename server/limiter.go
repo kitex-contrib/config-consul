@@ -15,9 +15,10 @@
 package server
 
 import (
-	"config-consul/consul"
-	"config-consul/utils"
 	"sync/atomic"
+
+	"github.com/kitex-contrib/config-consul/consul"
+	"github.com/kitex-contrib/config-consul/utils"
 
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/limit"

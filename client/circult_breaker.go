@@ -15,9 +15,10 @@
 package client
 
 import (
-	"config-consul/consul"
-	"config-consul/utils"
 	"strings"
+
+	"github.com/kitex-contrib/config-consul/consul"
+	"github.com/kitex-contrib/config-consul/utils"
 
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/circuitbreak"

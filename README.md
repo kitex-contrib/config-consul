@@ -1,7 +1,12 @@
-# config-consul 
+# config-consul
+
 [中文](./README_CN.md)
 
-etcd as config center for service governance.
+consul as config center for service governance.
+
+## Install
+
+`go get github.com/kitex-contrib/config-consul`
 
 ## Usage
 
@@ -14,11 +19,11 @@ etcd as config center for service governance.
 package main
 
 import (
-	"config-consul/consul"
+	"github.com/kitex-contrib/config-consul/consul"
 	"context"
 	"log"
 
-	consulserver "config-consul/server"
+	consulserver "github.com/kitex-contrib/config-consul/server"
 
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"
@@ -41,11 +46,11 @@ func (s *EchoImpl) Echo(ctx context.Context, req *api.Request) (resp *api.Respon
 func main() {
 	klog.SetLevel(klog.LevelDebug)
 	serviceName := "ServiceName" // your server-side service name
-	etcdClient, _ := consul.NewClient(consul.Options{})
+	consulClient, _ := consul.NewClient(consul.Options{})
 	svr := echo.NewServer(
 		new(EchoImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: serviceName}),
-		server.WithSuite(consulserver.NewSuite(serviceName, etcdClient)),
+		server.WithSuite(consulserver.NewSuite(serviceName, consulClient)),
 	)
 	if err := svr.Run(); err != nil {
 		log.Println("server stopped with error:", err)
@@ -56,6 +61,7 @@ func main() {
 
 
 ```
+
 #### Client
 
 ```go
@@ -63,13 +69,13 @@ func main() {
 package main
 
 import (
-	"config-consul/consul"
-	"config-consul/utils"
+	"github.com/kitex-contrib/config-consul/consul"
+	"github.com/kitex-contrib/config-consul/utils"
 	"context"
 	"log"
 	"time"
 
-	consulclient "config-consul/client"
+	consulclient "github.com/kitex-contrib/config-consul/client"
 
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"
@@ -118,11 +124,13 @@ func main() {
 }
 
 ```
+
 ### Consul Configuration
 
 #### CustomFunction
 
-Provide the mechanism to custom the etcd parameter `Key`.
+Provide the mechanism to custom the consul parameter `Key`.
+
 ```go
 type Key struct {
 Type   ConfigType
@@ -131,17 +139,16 @@ Path   string
 }
 ```
 
-
 #### Options Variable
 
 | Variable Name    | Default Value                                               |
-|------------------|-------------------------------------------------------------|
+| ---------------- | ----------------------------------------------------------- |
 | Addr             | 127.0.0.1:8500                                              |
 | Prefix           | /KitexConfig                                                |
 | ServerPathFormat | {{.ServerServiceName}}/{{.Category}}                        |
 | ClientPathFormat | {{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}} |
 | DataCenter       | dc1                                                         |
-| Timeout          | 5 * time.Second                                             |
+| Timeout          | 5 \* time.Second                                            |
 | NamespaceId      |                                                             |
 | Token            |                                                             |
 | Partition        |                                                             |
@@ -149,17 +156,19 @@ Path   string
 | ConfigParser     | defaultConfigParser                                         |
 
 #### Governance Policy
+
 > The configPath and configPrefix in the following example use default values, the service name is `ServiceName` and the client name is `ClientName`.
 
 ##### Rate Limit Category=limit
+
 > Currently, current limiting only supports the server side, so ClientServiceName is empty.
 
 [JSON Schema](https://github.com/cloudwego/kitex/blob/develop/pkg/limiter/item_limiter.go#L33)
 
 | Variable         | Introduction                       |
-|------------------|------------------------------------|
-| connection_limit | Maximum concurrent connections     | 
-| qps_limit        | Maximum request number every 100ms | 
+| ---------------- | ---------------------------------- |
+| connection_limit | Maximum concurrent connections     |
+| qps_limit        | Maximum request number every 100ms |
 
 Example:
 
@@ -179,12 +188,13 @@ Note:
 - connection_limit and qps_limit can be configured independently, e.g. connection_limit = 100, qps_limit = 0
 
 ##### Retry Policy Category=retry
+
 [JSON Schema](https://github.com/cloudwego/kitex/blob/develop/pkg/retry/policy.go#L63)
 
 | Variable                      | Introduction                                   |
-|-------------------------------|------------------------------------------------|
-| type                          | 0: failure_policy 1: backup_policy             | 
-| failure_policy.backoff_policy | Can only be set one of `fixed` `none` `random` | 
+| ----------------------------- | ---------------------------------------------- |
+| type                          | 0: failure_policy 1: backup_policy             |
+| failure_policy.backoff_policy | Can only be set one of `fixed` `none` `random` |
 
 Example：
 
@@ -192,43 +202,44 @@ Example：
 
 ```json
 {
-    "*": {  
-        "enable": true,
-        "type": 0,                 
-        "failure_policy": {
-            "stop_policy": {
-                "max_retry_times": 3,
-                "max_duration_ms": 2000,
-                "cb_policy": {
-                    "error_rate": 0.3
-                }
-            },
-            "backoff_policy": {
-                "backoff_type": "fixed", 
-                "cfg_items": {
-                    "fix_ms": 50
-                }
-            },
-            "retry_same_node": false
+  "*": {
+    "enable": true,
+    "type": 0,
+    "failure_policy": {
+      "stop_policy": {
+        "max_retry_times": 3,
+        "max_duration_ms": 2000,
+        "cb_policy": {
+          "error_rate": 0.3
         }
-    },
-    "echo": { 
-        "enable": true,
-        "type": 1,                 
-        "backup_policy": {
-            "retry_delay_ms": 100,
-            "retry_same_node": false,
-            "stop_policy": {
-                "max_retry_times": 2,
-                "max_duration_ms": 300,
-                "cb_policy": {
-                    "error_rate": 0.2
-                }
-            }
+      },
+      "backoff_policy": {
+        "backoff_type": "fixed",
+        "cfg_items": {
+          "fix_ms": 50
         }
+      },
+      "retry_same_node": false
     }
+  },
+  "echo": {
+    "enable": true,
+    "type": 1,
+    "backup_policy": {
+      "retry_delay_ms": 100,
+      "retry_same_node": false,
+      "stop_policy": {
+        "max_retry_times": 2,
+        "max_duration_ms": 300,
+        "cb_policy": {
+          "error_rate": 0.2
+        }
+      }
+    }
+  }
 }
 ```
+
 Note: retry.Container has built-in support for specifying the default configuration using the `*` wildcard (see the [getRetryer](https://github.com/cloudwego/kitex/blob/v0.5.1/pkg/retry/retryer.go#L240) method for details).
 
 ##### RPC Timeout Category=rpc_timeout
@@ -251,6 +262,7 @@ Example：
   }
 }
 ```
+
 Note: The circuit breaker implementation of kitex does not currently support changing the global default configuration (see [initServiceCB](https://github.com/cloudwego/kitex/blob/v0.5.1/pkg/circuitbreak/cbsuite.go#L195) for details).
 
 ##### Circuit Break: Category=circuit_break
@@ -258,8 +270,8 @@ Note: The circuit breaker implementation of kitex does not currently support cha
 [JSON Schema](https://github.com/cloudwego/kitex/blob/develop/pkg/circuitbreak/item_circuit_breaker.go#L30)
 
 | Variable   | Introduction                      |
-|------------|-----------------------------------|
-| min_sample | Minimum statistical sample number | 
+| ---------- | --------------------------------- |
+| min_sample | Minimum statistical sample number |
 
 Example：
 
@@ -271,18 +283,18 @@ The echo method uses the following configuration (0.3, 100) and other methods us
 {
   "echo": {
     "enable": true,
-    "err_rate": 0.3, 
-    "min_sample": 100 
+    "err_rate": 0.3,
+    "min_sample": 100
   }
 }
 ```
+
 ### More Info
 
 Refer to [example](https://github.com/kitex-contrib/config-consul/tree/main/example) for more usage.
 
 ## Compatibility
 
-the version of Go must >=1.19
+the version of Go must >=1.20
 
 maintained by: [hiahia12](https://github.com/hiahia12)
-

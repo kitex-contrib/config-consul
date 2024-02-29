@@ -15,11 +15,11 @@
 package main
 
 import (
-	"config-consul/consul"
 	"context"
 	"log"
 
-	consulserver "config-consul/server"
+	"github.com/kitex-contrib/config-consul/consul"
+	consulserver "github.com/kitex-contrib/config-consul/server"
 
 	"github.com/cloudwego/kitex-examples/kitex_gen/api"
 	"github.com/cloudwego/kitex-examples/kitex_gen/api/echo"
@@ -42,11 +42,11 @@ func (s *EchoImpl) Echo(ctx context.Context, req *api.Request) (resp *api.Respon
 func main() {
 	klog.SetLevel(klog.LevelDebug)
 	serviceName := "ServiceName" // your server-side service name
-	etcdClient, _ := consul.NewClient(consul.Options{})
+	consulClient, _ := consul.NewClient(consul.Options{})
 	svr := echo.NewServer(
 		new(EchoImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: serviceName}),
-		server.WithSuite(consulserver.NewSuite(serviceName, etcdClient)),
+		server.WithSuite(consulserver.NewSuite(serviceName, consulClient)),
 	)
 	if err := svr.Run(); err != nil {
 		log.Println("server stopped with error:", err)

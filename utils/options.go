@@ -14,7 +14,7 @@
 
 package utils
 
-import "config-consul/consul"
+import "github.com/kitex-contrib/config-consul/consul"
 
 // Option is used to custom Options.
 type Option interface {
