@@ -7,6 +7,7 @@ require (
 	github.com/cloudwego/kitex-examples v0.2.4
 	github.com/hashicorp/consul/api v1.26.1
 	go.uber.org/zap v1.26.0
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
