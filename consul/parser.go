@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"sigs.k8s.io/yaml"
+	"sigs.k8s.io/yaml/goyaml.v3"
 )
 
 type ConfigType string
