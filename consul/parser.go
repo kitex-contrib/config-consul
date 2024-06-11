@@ -15,10 +15,11 @@
 package consul
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
-	"sigs.k8s.io/yaml/goyaml.v3"
+	yaml "sigs.k8s.io/yaml/goyaml.v3"
 )
 
 type ConfigType string
@@ -53,8 +54,9 @@ type parser struct{}
 
 func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
 	switch configType {
-	case JSON, YAML:
-		// since YAML is a superset of JSON, it can parse JSON using a YAML parser
+	case JSON:
+		return json.Unmarshal([]byte(data), config)
+	case YAML:
 		return yaml.Unmarshal([]byte(data), config)
 	default:
 		return fmt.Errorf("unsupported config data type %s", configType)
