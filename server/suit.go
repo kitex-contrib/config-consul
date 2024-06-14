@@ -49,7 +49,7 @@ func NewSuite(service string, cli consul.Client,
 	return su
 }
 
-// Options return a list client.Option
+// Options return a list server.Option
 func (s *ConsulServerSuite) Options() []server.Option {
 	opts := make([]server.Option, 0, 2)
 	opts = append(opts, WithLimiter(s.service, s.consulClient, s.uid, s.opts))
