@@ -291,8 +291,6 @@ echo 方法使用下面的配置（0.3、100），其他方法使用全局默认
 
 ##### 降级: Category=degradation
 
-[JSON Schema](https://github.com/cloudwego/kitex/blob/develop/pkg/circuitbreak/item_circuit_breaker.go#L30)
-
 | 参数         | 说明       |
 |------------|----------|
 | enable     | 是否开启降级策略 |

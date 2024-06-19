@@ -290,7 +290,6 @@ The echo method uses the following configuration (0.3, 100) and other methods us
 ```
 ##### Degradation: Category=degradation
 
-[JSON Schema](https://github.com/cloudwego/kitex/blob/develop/pkg/circuitbreak/item_circuit_breaker.go#L30)
 
 | Variable   | Introduction                       |
 |------------|------------------------------------|
