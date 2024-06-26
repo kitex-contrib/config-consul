@@ -25,6 +25,7 @@ const (
 	retryConfigName          = "retry"
 	rpcTimeoutConfigName     = "rpc_timeout"
 	circuitBreakerConfigName = "circuit_break"
+	degradationConfigName    = "degradation"
 )
 
 type ConsulClientSuite struct {
@@ -59,5 +60,6 @@ func (s *ConsulClientSuite) Options() []client.Option {
 	opts = append(opts, WithCircuitBreaker(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	opts = append(opts, WithRetryPolicy(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	opts = append(opts, WithRPCTimeout(s.service, s.client, s.consulClient, s.uid, s.opts)...)
+	opts = append(opts, WithDegradation(s.service, s.client, s.consulClient, s.uid, s.opts)...)
 	return opts
 }
