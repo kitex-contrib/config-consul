@@ -15,11 +15,10 @@
 package consul
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
 	"time"
 
-	yaml "sigs.k8s.io/yaml/goyaml.v3"
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 type ConfigType string
@@ -36,33 +35,40 @@ const (
 	ConsulDefaultServerPath              = "{{.ServerServiceName}}/{{.Category}}"
 )
 
-var _ ConfigParser = &parser{}
+var _ ConfigParser = &parserAdapter{}
 
 // CustomFunction use for customize the config parameters.
 type CustomFunction func(*Key)
 
 type ConfigParamConfig struct {
-	Category          string
-	ClientServiceName string
-	ServerServiceName string
+	CwConfigParamConfig cwUtils.ConfigParamConfig
 }
 
 type ConfigParser interface {
 	Decode(configType ConfigType, data string, config interface{}) error
 }
-type parser struct{}
 
-func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
-	switch configType {
-	case JSON:
-		return json.Unmarshal([]byte(data), config)
-	case YAML:
-		return yaml.Unmarshal([]byte(data), config)
-	default:
-		return fmt.Errorf("unsupported config data type %s", configType)
-	}
+type parserAdapter struct{
+	cwParser cwUtils.ConfigParser
 }
 
-func defaultConfigParse() ConfigParser {
-	return &parser{}
+func (p *parserAdapter) Decode(configType ConfigType, data string, config interface{}) error {
+	return p.cwParser.Decode(cwUtils.ConfigType(configType), data, config)
+}
+
+func transferConfigParser(parser ConfigParser) (cwUtils.ConfigParser, error) {
+	adapter, ok := parser.(*parserAdapter)
+	if !ok {
+		return nil, errors.New("transferConfigParser: invalid parser")
+	}
+
+	return adapter.cwParser, nil
+}
+
+func transferCwConfigParser(cwParser cwUtils.ConfigParser) (ConfigParser, error) {
+	parser := &parserAdapter{
+		cwParser: cwParser,
+	}
+
+	return parser, nil
 }

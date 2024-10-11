@@ -14,11 +14,8 @@
 
 package consul
 
-import "sync/atomic"
-
-var globalNum int64
+import cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 
 func AllocateUniqueID() int64 {
-	atomic.AddInt64(&globalNum, 1)
-	return atomic.LoadInt64(&globalNum)
+	return cwConsul.AllocateUniqueID()
 }

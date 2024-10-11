@@ -21,14 +21,18 @@ import (
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/retry"
+
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 // WithRetryPolicy sets the retry policy from consul configuration center.
 func WithRetryPolicy(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
-		Category:          retryConfigName,
-		ServerServiceName: dest,
-		ClientServiceName: src,
+		CwConfigParamConfig: cwUtils.ConfigParamConfig{
+			Category:          retryConfigName,
+			ServerServiceName: dest,
+			ClientServiceName: src,
+		},
 	})
 	if err != nil {
 		panic(err)

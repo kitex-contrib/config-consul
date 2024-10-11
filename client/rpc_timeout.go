@@ -22,14 +22,18 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/rpctimeout"
+
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 // WithRPCTimeout sets the RPC timeout policy from consul configuration center.
 func WithRPCTimeout(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
-		Category:          rpcTimeoutConfigName,
-		ServerServiceName: dest,
-		ClientServiceName: src,
+		CwConfigParamConfig: cwUtils.ConfigParamConfig{
+			Category:          rpcTimeoutConfigName,
+			ServerServiceName: dest,
+			ClientServiceName: src,
+		},
 	})
 	if err != nil {
 		panic(err)

@@ -20,13 +20,17 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/pkg/degradation"
 	"github.com/kitex-contrib/config-consul/utils"
+
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 func WithDegradation(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
-		Category:          degradationConfigName,
-		ServerServiceName: dest,
-		ClientServiceName: src,
+		CwConfigParamConfig: cwUtils.ConfigParamConfig{
+			Category:          degradationConfigName,
+			ServerServiceName: dest,
+			ClientServiceName: src,
+		},
 	})
 	if err != nil {
 		panic(err)

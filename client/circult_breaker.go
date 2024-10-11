@@ -24,14 +24,18 @@ import (
 	"github.com/cloudwego/kitex/pkg/circuitbreak"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
+
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 // WithCircuitBreaker sets the circuit breaker policy from consul configuration center.
 func WithCircuitBreaker(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
 	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
-		Category:          circuitBreakerConfigName,
-		ServerServiceName: dest,
-		ClientServiceName: src,
+		CwConfigParamConfig: cwUtils.ConfigParamConfig{
+			Category:          circuitBreakerConfigName,
+			ServerServiceName: dest,
+			ClientServiceName: src,
+		},
 	})
 	if err != nil {
 		panic(err)

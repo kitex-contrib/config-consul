@@ -15,17 +15,13 @@
 package consul
 
 import (
-	"bytes"
-	"context"
-	"html/template"
-	"strconv"
-	"sync"
 	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
 	"go.uber.org/zap"
+
+	cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
+	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 const WatchByKey = "key"
@@ -35,6 +31,7 @@ type Key struct {
 	Prefix string
 	Path   string
 }
+
 type ListenConfig struct {
 	Key        string
 	Type       string
@@ -67,213 +64,110 @@ type Options struct {
 }
 
 type client struct {
-	consulCli          *api.Client
-	lconfig            *ListenConfig
-	parser             ConfigParser
-	consulTimeout      time.Duration
-	prefixTemplate     *template.Template
-	serverPathTemplate *template.Template
-	clientPathTemplate *template.Template
-	cancelMap          map[string]context.CancelFunc
-	m                  sync.Mutex
+	cwClient cwConsul.Client
 }
 
 func NewClient(opts Options) (Client, error) {
-	if opts.Addr == "" {
-		opts.Addr = ConsulDefaultConfigAddr
-	}
-	if opts.Prefix == "" {
-		opts.Prefix = ConsulDefaultConfiGPrefix
-	}
-	if opts.ConfigParser == nil {
-		opts.ConfigParser = defaultConfigParse()
-	}
-	if opts.TimeOut == 0 {
-		opts.TimeOut = ConsulDefaultTimeout
-	}
-	if opts.ClientPathFormat == "" {
-		opts.ClientPathFormat = ConsulDefaultClientPath
-	}
-	if opts.ServerPathFormat == "" {
-		opts.ServerPathFormat = ConsulDefaultServerPath
-	}
-	if opts.DataCenter == "" {
-		opts.DataCenter = ConsulDefaultDataCenter
-	}
-	consulClient, err := api.NewClient(&api.Config{
-		Address:    opts.Addr,
-		Datacenter: opts.DataCenter,
-		Token:      opts.Token,
-		Namespace:  opts.NamespaceId,
-		Partition:  opts.Partition,
-	})
+	c, err := cwConsul.NewClient(*transferOpinion(opts))
 	if err != nil {
 		return nil, err
 	}
-	prefixTemplate, err := template.New("prefix").Parse(opts.Prefix)
-	if err != nil {
-		return nil, err
-	}
-	serverNameTemplate, err := template.New("serverName").Parse(opts.ServerPathFormat)
-	if err != nil {
-		return nil, err
-	}
-	clientNameTemplate, err := template.New("clientName").Parse(opts.ClientPathFormat)
-	if err != nil {
-		return nil, err
-	}
-	lconfig := &ListenConfig{
-		Type:       WatchByKey,
-		DataCenter: opts.DataCenter,
-		Token:      opts.Token,
-		ConsulAddr: opts.Addr,
-		Namespace:  opts.NamespaceId,
-		Partition:  opts.Partition,
-	}
-	c := &client{
-		consulCli:          consulClient,
-		parser:             opts.ConfigParser,
-		consulTimeout:      opts.TimeOut,
-		prefixTemplate:     prefixTemplate,
-		serverPathTemplate: serverNameTemplate,
-		clientPathTemplate: clientNameTemplate,
-		lconfig:            lconfig,
-		cancelMap:          make(map[string]context.CancelFunc),
-	}
-	return c, nil
+
+	return &client{cwClient: c}, nil
 }
 
 // SetParser support customise parser
 func (c *client) SetParser(parser ConfigParser) {
-	c.parser = parser
+	cwParser, err := transferConfigParser(parser)
+	if err != nil {
+		klog.Errorf("SetParser failed,error: %s", err.Error())
+		return
+	}
+
+	c.cwClient.SetParser(cwParser)
+}
+
+func transferCfs(cfs ...CustomFunction) []cwConsul.CustomFunction {
+	cwCfs := make([]cwConsul.CustomFunction, 0, len(cfs))
+	for _, cf := range cfs {
+		cwCfs = append(cwCfs, func(key *cwConsul.Key) {
+			cf(transferCwKey(key))
+		})
+	}
+	return cwCfs
 }
 
 func (c *client) ClientConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error) {
-	return c.configParam(cpc, c.clientPathTemplate, cfs...)
+	cwKey, err := c.cwClient.ClientConfigParam(&cpc.CwConfigParamConfig, transferCfs(cfs...)...)
+
+	if err != nil {
+		return Key{}, err
+	}
+
+	return *transferCwKey(&cwKey), nil
 }
 
 func (c *client) ServerConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error) {
-	return c.configParam(cpc, c.serverPathTemplate, cfs...)
-}
+	cwKey, err := c.cwClient.ServerConfigParam(&cpc.CwConfigParamConfig, transferCfs(cfs...)...)
 
-// configParam render config parameters. All the parameters can be customized with CustomFunction.
-// ConfigParam explain:
-//  1. Prefix: KitexConfig by default.
-//  2. ServerPath: {{.ServerServiceName}}/{{.Category}} by default.
-//     ClientPath: {{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}} by default.
-func (c *client) configParam(cpc *ConfigParamConfig, t *template.Template, cfs ...CustomFunction) (Key, error) {
-	param := Key{Type: JSON}
-	var err error
-	param.Path, err = c.render(cpc, t)
 	if err != nil {
-		return param, err
-	}
-	param.Prefix, err = c.render(cpc, c.prefixTemplate)
-	if err != nil {
-		return param, err
+		return Key{}, err
 	}
 
-	for _, cf := range cfs {
-		cf(&param)
-	}
-	return param, nil
-}
-
-func (c *client) render(cpc *ConfigParamConfig, t *template.Template) (string, error) {
-	var tpl bytes.Buffer
-	err := t.Execute(&tpl, cpc)
-	if err != nil {
-		return "", err
-	}
-	return tpl.String(), nil
+	return *transferCwKey(&cwKey), nil
 }
 
 // RegisterConfigCallback register the callback function to consul client.
 func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback func(string, ConfigParser)) {
-	go func() {
-		clientCtx, cancel := context.WithCancel(context.Background())
-		params := make(map[string]interface{})
-		params["datacenter"] = c.lconfig.DataCenter
-		params["token"] = c.lconfig.Token
-		params["type"] = c.lconfig.Type
-		params["key"] = key
-		c.lconfig.Key = key
-		kv := c.consulCli.KV()
-		get, _, _ := kv.Get(c.lconfig.Key, nil)
-		if get == nil {
-			klog.Debugf("[consul]  key:%s doesn't exist", key)
-			_, err := kv.Put(&api.KVPair{
-				Key:   c.lconfig.Key,
-				Value: []byte("{}"),
-			}, nil)
-			if err != nil {
-				klog.Errorf("[consul] Add key: %s failed,error: %s", key, err.Error())
-			}
-		}
-		c.registerCancelFunc(key, uniqueID, cancel)
-		w, err := watch.Parse(params)
+	cwCallback := func(key string, cwParser cwUtils.ConfigParser) {
+		parser, err := transferCwConfigParser(cwParser)
 		if err != nil {
-			klog.Debugf("[consul] key:add listen for %s failed", key)
-		}
-		if w == nil {
-			klog.Debugf("[consul] key:add listen for %s failed", key)
+			klog.Errorf("transferCwConfigParser failed,error: %s", err.Error())
 			return
 		}
-		klog.Debugf("[consul] key:add listen for %s successfully", key)
-		w.Handler = func(u uint64, i interface{}) {
-			if i == nil {
-				return
-			}
-			kv := i.(*api.KVPair)
-			v := string(kv.Value)
-			klog.Debugf("[consul] config key: %s updated,value is %s", key, v)
-			callback(v, c.parser)
-		}
-
-		go func() {
-			err := w.Run(c.lconfig.ConsulAddr)
-			if err != nil {
-				klog.Errorf("[consul] listen key: %s failed,error: %s", key, err.Error())
-			}
-		}()
-		for range clientCtx.Done() {
-			w.Stop()
-			return
-		}
-	}()
-	_, cancel := context.WithTimeout(context.Background(), c.consulTimeout)
-	defer cancel()
-	kv := c.consulCli.KV()
-	get, _, err := kv.Get(key, nil)
-	if err != nil {
-		klog.Debugf("[consul] key: %s config get value failed", c.lconfig.Key)
-		return
+		callback(key, parser)
 	}
-	if get == nil {
-		return
-	}
-	if get.Value == nil {
-		return
-	}
-	callback(string(get.Value), c.parser)
+	c.cwClient.RegisterConfigCallback(key, uniqueID, cwCallback)
 }
 
 func (c *client) DeregisterConfig(key string, uniqueID int64) {
-	c.deregisterCancelFunc(key, uniqueID)
+	c.cwClient.DeregisterConfig(key, uniqueID)
 }
 
-func (c *client) deregisterCancelFunc(key string, uniqueID int64) {
-	c.m.Lock()
-	clientKey := key + "/" + strconv.FormatInt(uniqueID, 10)
-	cancel := c.cancelMap[clientKey]
-	cancel()
-	delete(c.cancelMap, clientKey)
-	c.m.Unlock()
+// func transferKey(key *Key) *cwConsul.Key {
+// 	return &cwConsul.Key{
+// 		Type:   cwUtils.ConfigType(key.Type),
+// 		Prefix: key.Prefix,
+// 		Path:   key.Path,
+// 	}
+// }
+
+func transferCwKey(key *cwConsul.Key) *Key {
+	return &Key{
+		Type:   ConfigType(key.Type),
+		Prefix: key.Prefix,
+		Path:   key.Path,
+	}
 }
 
-func (c *client) registerCancelFunc(key string, uniqueID int64, cancel context.CancelFunc) {
-	c.m.Lock()
-	clientKey := key + "/" + strconv.FormatInt(uniqueID, 10)
-	c.cancelMap[clientKey] = cancel
-	c.m.Unlock()
+func transferOpinion(opinion Options) *cwConsul.Options {
+	cwConfigParser, err := transferConfigParser(opinion.ConfigParser)
+	if err != nil {
+		klog.Errorf("transferConfigParser failed,error: %s", err.Error())
+		return &cwConsul.Options{}
+	}
+
+	return &cwConsul.Options{
+		Addr:             opinion.Addr,
+		Prefix:           opinion.Prefix,
+		ServerPathFormat: opinion.ServerPathFormat,
+		ClientPathFormat: opinion.ClientPathFormat,
+		DataCenter:       opinion.DataCenter,
+		TimeOut:          opinion.TimeOut,
+		NamespaceId:      opinion.NamespaceId,
+		Token:            opinion.Token,
+		Partition:        opinion.Partition,
+		LoggerConfig:     opinion.LoggerConfig,
+		ConfigParser:     cwConfigParser,
+	}
 }
