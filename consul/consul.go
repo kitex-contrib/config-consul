@@ -28,34 +28,6 @@ type Client = consul.Client
 
 type Options = consul.Options
 
-var _ Client = &client{}
-
-type client struct {
-	cwClient consul.Client
-}
-
 func NewClient(opts Options) (Client, error) {
 	return consul.NewClient(opts)
-}
-
-// SetParser support customise parser
-func (c *client) SetParser(parser ConfigParser) {
-	c.cwClient.SetParser(parser)
-}
-
-func (c *client) ClientConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error) {
-	return c.cwClient.ClientConfigParam(cpc, cfs...)
-}
-
-func (c *client) ServerConfigParam(cpc *ConfigParamConfig, cfs ...CustomFunction) (Key, error) {
-	return c.cwClient.ServerConfigParam(cpc, cfs...)
-}
-
-// RegisterConfigCallback register the callback function to consul client.
-func (c *client) RegisterConfigCallback(key string, uniqueID int64, callback func(string, ConfigParser)) {
-	c.cwClient.RegisterConfigCallback(key, uniqueID, callback)
-}
-
-func (c *client) DeregisterConfig(key string, uniqueID int64) {
-	c.cwClient.DeregisterConfig(key, uniqueID)
 }

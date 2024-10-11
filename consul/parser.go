@@ -33,19 +33,9 @@ const (
 	ConsulDefaultServerPath              = consul.ConsulDefaultServerPath
 )
 
-var _ ConfigParser = &parser{}
-
 // CustomFunction use for customize the config parameters.
 type CustomFunction = consul.CustomFunction
 
 type ConfigParamConfig = utils.ConfigParamConfig
 
 type ConfigParser = utils.ConfigParser
-
-type parser struct {
-	cwParser utils.ConfigParser
-}
-
-func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
-	return p.cwParser.Decode(utils.ConfigType(configType), data, config)
-}
