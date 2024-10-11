@@ -3,24 +3,21 @@ module github.com/kitex-contrib/config-consul
 go 1.21
 
 require (
-	github.com/bytedance/gopkg v0.1.1
 	github.com/cloudwego-contrib/cwgo-pkg/config/consul v0.0.0-00010101000000-000000000000
-	github.com/cloudwego/configmanager v0.2.2
+	github.com/cloudwego-contrib/cwgo-pkg/config/utils v0.0.0-00010101000000-000000000000
 	github.com/cloudwego/kitex v0.11.0
 	github.com/cloudwego/kitex-examples v0.3.3
 	github.com/cloudwego/thriftgo v0.3.17
-	github.com/hashicorp/consul/api v1.26.1
-	go.uber.org/zap v1.26.0
-	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
 	github.com/apache/thrift v0.20.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
+	github.com/bytedance/gopkg v0.1.1 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
-	github.com/cloudwego-contrib/cwgo-pkg/config/utils v0.0.0-00010101000000-000000000000 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
+	github.com/cloudwego/configmanager v0.2.2 // indirect
 	github.com/cloudwego/dynamicgo v0.4.0 // indirect
 	github.com/cloudwego/fastpb v0.0.5 // indirect
 	github.com/cloudwego/frugal v0.2.0 // indirect
@@ -34,6 +31,7 @@ require (
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
+	github.com/hashicorp/consul/api v1.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
@@ -60,6 +58,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/arch v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
 	golang.org/x/net v0.24.0 // indirect
@@ -70,6 +69,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
