@@ -20,10 +20,10 @@ import (
 
 	"github.com/cloudwego/kitex/client"
 
-	cwClient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
 // WithRetryPolicy sets the retry policy from consul configuration center.
 func WithRetryPolicy(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
-	return cwClient.WithRetryPolicy(dest, src, consulClient, uniqueID, opts)
+	return configclient.WithRetryPolicy(dest, src, consulClient, uniqueID, opts)
 }

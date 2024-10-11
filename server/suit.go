@@ -18,13 +18,13 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	cwServer "github.com/cloudwego-contrib/cwgo-pkg/config/consul/server"
+	configserver "github.com/cloudwego-contrib/cwgo-pkg/config/consul/server"
 )
 
 // ConsulServerSuite consul server config suite, configure limiter config dynamically from consul.
-type ConsulServerSuite = cwServer.ConsulServerSuite
+type ConsulServerSuite = configserver.ConsulServerSuite
 
 // NewSuite service is the destination service.
 func NewSuite(service string, cli consul.Client, opts ...utils.Option) *ConsulServerSuite {
-	return cwServer.NewSuite(service, cli, opts...)
+	return configserver.NewSuite(service, cli, opts...)
 }

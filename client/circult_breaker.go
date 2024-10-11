@@ -20,10 +20,10 @@ import (
 
 	"github.com/cloudwego/kitex/client"
 
-	cwClient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
 // WithCircuitBreaker sets the circuit breaker policy from consul configuration center.
 func WithCircuitBreaker(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
-	return cwClient.WithCircuitBreaker(dest, src, consulClient, uniqueID, opts)
+	return configclient.WithCircuitBreaker(dest, src, consulClient, uniqueID, opts)
 }

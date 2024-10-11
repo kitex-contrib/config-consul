@@ -18,12 +18,12 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	cwClient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
-type ConsulClientSuite = cwClient.ConsulClientSuite
+type ConsulClientSuite = configclient.ConsulClientSuite
 
 // NewSuite service is the destination service name and client is the local identity.
 func NewSuite(service, client string, cli consul.Client, opts ...utils.Option) *ConsulClientSuite {
-	return cwClient.NewSuite(service, client, cli, opts...)
+	return configclient.NewSuite(service, client, cli, opts...)
 }

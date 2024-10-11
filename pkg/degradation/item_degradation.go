@@ -15,14 +15,14 @@
 package degradation
 
 import (
-	cwDegradation "github.com/cloudwego-contrib/cwgo-pkg/config/consul/pkg/degradation"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/pkg/degradation"
 )
 
-type DegradationConfig = cwDegradation.DegradationConfig
+type DegradationConfig = degradation.DegradationConfig
 
 // DegradationContainer is a wrapper for DegradationConfig
-type DegradationContainer = cwDegradation.DegradationContainer
+type DegradationContainer = degradation.DegradationContainer
 
 func NewDegradationContainer() *DegradationContainer {
-	return cwDegradation.NewDegradationContainer()
+	return degradation.NewDegradationContainer()
 }

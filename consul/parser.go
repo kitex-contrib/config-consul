@@ -17,11 +17,11 @@ package consul
 import (
 	"time"
 
-	cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
-	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
-type ConfigType = cwUtils.ConfigType
+type ConfigType = utils.ConfigType
 
 const (
 	JSON                      ConfigType = "json"
@@ -38,16 +38,16 @@ const (
 var _ ConfigParser = &parser{}
 
 // CustomFunction use for customize the config parameters.
-type CustomFunction = cwConsul.CustomFunction
+type CustomFunction = consul.CustomFunction
 
-type ConfigParamConfig = cwUtils.ConfigParamConfig
+type ConfigParamConfig = utils.ConfigParamConfig
 
-type ConfigParser = cwUtils.ConfigParser
+type ConfigParser = utils.ConfigParser
 
 type parser struct {
-	cwParser cwUtils.ConfigParser
+	cwParser utils.ConfigParser
 }
 
 func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
-	return p.cwParser.Decode(cwUtils.ConfigType(configType), data, config)
+	return p.cwParser.Decode(utils.ConfigType(configType), data, config)
 }

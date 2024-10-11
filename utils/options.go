@@ -15,11 +15,11 @@
 package utils
 
 import (
-	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/consul/utils"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/utils"
 )
 
 // Option is used to custom Options.
-type Option = cwUtils.Option
+type Option = utils.Option
 
 // Options is used to initialize the nacos config suit or option.
-type Options = cwUtils.Options
+type Options = utils.Options

@@ -15,12 +15,12 @@
 package utils
 
 import (
-	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
 // ThreadSafeSet wrapper of Set.
-type ThreadSafeSet = cwUtils.ThreadSafeSet
+type ThreadSafeSet = utils.ThreadSafeSet
 
 // Set map template.
-type Set = cwUtils.Set
+type Set = utils.Set
 

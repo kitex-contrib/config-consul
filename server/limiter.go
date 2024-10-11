@@ -18,11 +18,11 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	cwServer "github.com/cloudwego-contrib/cwgo-pkg/config/consul/server"
+	configserver "github.com/cloudwego-contrib/cwgo-pkg/config/consul/server"
 	"github.com/cloudwego/kitex/server"
 )
 
 // WithLimiter sets the limiter config from consul configuration center.
 func WithLimiter(dest string, consulClient consul.Client, uniqueID int64, opts utils.Options) server.Option {
-	return cwServer.WithLimiter(dest, consulClient, uniqueID, opts)
+	return configserver.WithLimiter(dest, consulClient, uniqueID, opts)
 }

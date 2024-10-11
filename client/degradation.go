@@ -19,9 +19,9 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	cwClient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
 func WithDegradation(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
-	return cwClient.WithDegradation(dest, src, consulClient, uniqueID, opts)
+	return configclient.WithDegradation(dest, src, consulClient, uniqueID, opts)
 }

@@ -14,8 +14,8 @@
 
 package consul
 
-import cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
+import consul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 
 func AllocateUniqueID() int64 {
-	return cwConsul.AllocateUniqueID()
+	return consul.AllocateUniqueID()
 }

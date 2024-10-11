@@ -15,27 +15,27 @@
 package consul
 
 import (
-	cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 )
 
-const WatchByKey = cwConsul.WatchByKey
+const WatchByKey = consul.WatchByKey
 
-type Key = cwConsul.Key
+type Key = consul.Key
 
-type ListenConfig = cwConsul.ListenConfig
+type ListenConfig = consul.ListenConfig
 
-type Client = cwConsul.Client
+type Client = consul.Client
 
-type Options = cwConsul.Options
+type Options = consul.Options
 
 var _ Client = &client{}
 
 type client struct {
-	cwClient cwConsul.Client
+	cwClient consul.Client
 }
 
 func NewClient(opts Options) (Client, error) {
-	return cwConsul.NewClient(opts)
+	return consul.NewClient(opts)
 }
 
 // SetParser support customise parser
