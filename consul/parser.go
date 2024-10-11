@@ -15,8 +15,6 @@
 package consul
 
 import (
-	"time"
-
 	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 	"github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
@@ -24,15 +22,15 @@ import (
 type ConfigType = utils.ConfigType
 
 const (
-	JSON                      ConfigType = "json"
-	YAML                      ConfigType = "yaml"
-	HCL                       ConfigType = "hcl"
-	ConsulDefaultConfigAddr              = "127.0.0.1:8500"
-	ConsulDefaultConfiGPrefix            = "KitexConfig"
-	ConsulDefaultTimeout                 = 5 * time.Second
-	ConsulDefaultDataCenter              = "dc1"
-	ConsulDefaultClientPath              = "{{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}}"
-	ConsulDefaultServerPath              = "{{.ServerServiceName}}/{{.Category}}"
+	JSON                      ConfigType = utils.JSON
+	YAML                      ConfigType = utils.YAML
+	HCL                       ConfigType = utils.HCL
+	ConsulDefaultConfigAddr              = consul.ConsulDefaultConfigAddr
+	ConsulDefaultConfiGPrefix            = consul.ConsulDefaultConfiGPrefix
+	ConsulDefaultTimeout                 = consul.ConsulDefaultTimeout
+	ConsulDefaultDataCenter              = consul.ConsulDefaultDataCenter
+	ConsulDefaultClientPath              = consul.ConsulDefaultClientPath
+	ConsulDefaultServerPath              = consul.ConsulDefaultServerPath
 )
 
 var _ ConfigParser = &parser{}
