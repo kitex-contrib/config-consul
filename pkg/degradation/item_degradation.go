@@ -15,67 +15,14 @@
 package degradation
 
 import (
-	"context"
-	"errors"
-	"sync/atomic"
-
-	"github.com/bytedance/gopkg/lang/fastrand"
-	"github.com/cloudwego/configmanager/iface"
-	"github.com/cloudwego/kitex/pkg/acl"
+	cwDegradation "github.com/cloudwego-contrib/cwgo-pkg/config/consul/pkg/degradation"
 )
 
-var errRejected = errors.New("rejected by client degradation config")
-
-var defaultDegradationConfig = &DegradationConfig{
-	Enable:     false,
-	Percentage: 0,
-}
-
-type DegradationConfig struct {
-	Enable     bool `json:"enable"`
-	Percentage int  `json:"percentage"`
-}
-
-// DeepCopy returns a copy of the current DegradationConfig
-func (c *DegradationConfig) DeepCopy() iface.ConfigValueItem {
-	result := &DegradationConfig{
-		Enable:     c.Enable,
-		Percentage: c.Percentage,
-	}
-	return result
-}
-
-// EqualsTo returns true if the current DegradationConfig equals to the other DegradationConfig
-func (c *DegradationConfig) EqualsTo(other iface.ConfigValueItem) bool {
-	o := other.(*DegradationConfig)
-	return c.Enable == o.Enable && c.Percentage == o.Percentage
-}
+type DegradationConfig = cwDegradation.DegradationConfig
 
 // DegradationContainer is a wrapper for DegradationConfig
-type DegradationContainer struct {
-	config atomic.Value
-}
+type DegradationContainer = cwDegradation.DegradationContainer
 
 func NewDegradationContainer() *DegradationContainer {
-	c := &DegradationContainer{}
-	c.config.Store(defaultDegradationConfig)
-	return c
-}
-
-// NotifyPolicyChange to receive policy when it changes
-func (c *DegradationContainer) NotifyPolicyChange(cfg *DegradationConfig) {
-	c.config.Store(cfg)
-}
-
-func (c *DegradationContainer) GetAclRule() acl.RejectFunc {
-	return func(ctx context.Context, request interface{}) (reason error) {
-		cfg := c.config.Load().(*DegradationConfig)
-		if !cfg.Enable {
-			return nil
-		}
-		if fastrand.Intn(100) < cfg.Percentage {
-			return errRejected
-		}
-		return nil
-	}
+	return cwDegradation.NewDegradationContainer()
 }

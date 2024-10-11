@@ -25,6 +25,8 @@ import (
 
 var errFake = errors.New("fake error")
 
+var errRejected = errors.New("rejected by client degradation config")
+
 func invoke(ctx context.Context, request, response interface{}) error {
 	return errFake
 }

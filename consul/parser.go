@@ -15,13 +15,13 @@
 package consul
 
 import (
-	"errors"
 	"time"
 
+	cwConsul "github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 	cwUtils "github.com/cloudwego-contrib/cwgo-pkg/config/utils"
 )
 
-type ConfigType string
+type ConfigType = cwUtils.ConfigType
 
 const (
 	JSON                      ConfigType = "json"
@@ -35,40 +35,19 @@ const (
 	ConsulDefaultServerPath              = "{{.ServerServiceName}}/{{.Category}}"
 )
 
-var _ ConfigParser = &parserAdapter{}
+var _ ConfigParser = &parser{}
 
 // CustomFunction use for customize the config parameters.
-type CustomFunction func(*Key)
+type CustomFunction = cwConsul.CustomFunction
 
-type ConfigParamConfig struct {
-	CwConfigParamConfig cwUtils.ConfigParamConfig
-}
+type ConfigParamConfig = cwUtils.ConfigParamConfig
 
-type ConfigParser interface {
-	Decode(configType ConfigType, data string, config interface{}) error
-}
+type ConfigParser = cwUtils.ConfigParser
 
-type parserAdapter struct{
+type parser struct {
 	cwParser cwUtils.ConfigParser
 }
 
-func (p *parserAdapter) Decode(configType ConfigType, data string, config interface{}) error {
+func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
 	return p.cwParser.Decode(cwUtils.ConfigType(configType), data, config)
-}
-
-func transferConfigParser(parser ConfigParser) (cwUtils.ConfigParser, error) {
-	adapter, ok := parser.(*parserAdapter)
-	if !ok {
-		return nil, errors.New("transferConfigParser: invalid parser")
-	}
-
-	return adapter.cwParser, nil
-}
-
-func transferCwConfigParser(cwParser cwUtils.ConfigParser) (ConfigParser, error) {
-	parser := &parserAdapter{
-		cwParser: cwParser,
-	}
-
-	return parser, nil
 }
