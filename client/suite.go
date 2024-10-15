@@ -18,48 +18,12 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	"github.com/cloudwego/kitex/client"
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
-const (
-	retryConfigName          = "retry"
-	rpcTimeoutConfigName     = "rpc_timeout"
-	circuitBreakerConfigName = "circuit_break"
-	degradationConfigName    = "degradation"
-)
-
-type ConsulClientSuite struct {
-	uid          int64
-	consulClient consul.Client
-	service      string
-	client       string
-	opts         utils.Options
-}
+type ConsulClientSuite = configclient.ConsulClientSuite
 
 // NewSuite service is the destination service name and client is the local identity.
-func NewSuite(service, client string, cli consul.Client,
-	opts ...utils.Option,
-) *ConsulClientSuite {
-	uid := consul.AllocateUniqueID()
-	su := &ConsulClientSuite{
-		uid:          uid,
-		service:      service,
-		client:       client,
-		consulClient: cli,
-	}
-	for _, opt := range opts {
-		opt.Apply(&su.opts)
-	}
-
-	return su
-}
-
-// Options return a list client.Option
-func (s *ConsulClientSuite) Options() []client.Option {
-	opts := make([]client.Option, 0, 7)
-	opts = append(opts, WithCircuitBreaker(s.service, s.client, s.consulClient, s.uid, s.opts)...)
-	opts = append(opts, WithRetryPolicy(s.service, s.client, s.consulClient, s.uid, s.opts)...)
-	opts = append(opts, WithRPCTimeout(s.service, s.client, s.consulClient, s.uid, s.opts)...)
-	opts = append(opts, WithDegradation(s.service, s.client, s.consulClient, s.uid, s.opts)...)
-	return opts
+func NewSuite(service, client string, cli consul.Client, opts ...utils.Option) *ConsulClientSuite {
+	return configclient.NewSuite(service, client, cli, opts...)
 }

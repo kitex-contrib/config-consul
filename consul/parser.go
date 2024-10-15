@@ -15,54 +15,27 @@
 package consul
 
 import (
-	"encoding/json"
-	"fmt"
-	"time"
-
-	yaml "sigs.k8s.io/yaml/goyaml.v3"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
+	"github.com/cloudwego-contrib/cwgo-pkg/config/common"
 )
 
-type ConfigType string
+type ConfigType = utils.ConfigType
 
 const (
-	JSON                      ConfigType = "json"
-	YAML                      ConfigType = "yaml"
-	HCL                       ConfigType = "hcl"
-	ConsulDefaultConfigAddr              = "127.0.0.1:8500"
-	ConsulDefaultConfiGPrefix            = "KitexConfig"
-	ConsulDefaultTimeout                 = 5 * time.Second
-	ConsulDefaultDataCenter              = "dc1"
-	ConsulDefaultClientPath              = "{{.ClientServiceName}}/{{.ServerServiceName}}/{{.Category}}"
-	ConsulDefaultServerPath              = "{{.ServerServiceName}}/{{.Category}}"
+	JSON                      ConfigType = utils.JSON
+	YAML                      ConfigType = utils.YAML
+	HCL                       ConfigType = utils.HCL
+	ConsulDefaultConfigAddr              = consul.ConsulDefaultConfigAddr
+	ConsulDefaultConfiGPrefix            = consul.ConsulDefaultConfiGPrefix
+	ConsulDefaultTimeout                 = consul.ConsulDefaultTimeout
+	ConsulDefaultDataCenter              = consul.ConsulDefaultDataCenter
+	ConsulDefaultClientPath              = consul.ConsulDefaultClientPath
+	ConsulDefaultServerPath              = consul.ConsulDefaultServerPath
 )
 
-var _ ConfigParser = &parser{}
-
 // CustomFunction use for customize the config parameters.
-type CustomFunction func(*Key)
+type CustomFunction = consul.CustomFunction
 
-type ConfigParamConfig struct {
-	Category          string
-	ClientServiceName string
-	ServerServiceName string
-}
+type ConfigParamConfig = utils.ConfigParamConfig
 
-type ConfigParser interface {
-	Decode(configType ConfigType, data string, config interface{}) error
-}
-type parser struct{}
-
-func (p *parser) Decode(configType ConfigType, data string, config interface{}) error {
-	switch configType {
-	case JSON:
-		return json.Unmarshal([]byte(data), config)
-	case YAML:
-		return yaml.Unmarshal([]byte(data), config)
-	default:
-		return fmt.Errorf("unsupported config data type %s", configType)
-	}
-}
-
-func defaultConfigParse() ConfigParser {
-	return &parser{}
-}
+type ConfigParser = utils.ConfigParser

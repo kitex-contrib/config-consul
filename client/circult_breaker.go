@@ -15,96 +15,15 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
 	"github.com/cloudwego/kitex/client"
-	"github.com/cloudwego/kitex/pkg/circuitbreak"
-	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/cloudwego/kitex/pkg/rpcinfo"
+
+	configclient "github.com/cloudwego-contrib/cwgo-pkg/config/consul/client"
 )
 
 // WithCircuitBreaker sets the circuit breaker policy from consul configuration center.
 func WithCircuitBreaker(dest, src string, consulClient consul.Client, uniqueID int64, opts utils.Options) []client.Option {
-	param, err := consulClient.ClientConfigParam(&consul.ConfigParamConfig{
-		Category:          circuitBreakerConfigName,
-		ServerServiceName: dest,
-		ClientServiceName: src,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, f := range opts.ConsulCustomFunctions {
-		f(&param)
-	}
-	key := param.Prefix + "/" + param.Path
-	cbSuite := initCircuitBreaker(param.Type, key, dest, src, consulClient, uniqueID)
-
-	return []client.Option{
-		client.WithCircuitBreaker(cbSuite),
-		client.WithCloseCallbacks(func() error {
-			// cancel the configuration listener when client is closed.
-			consulClient.DeregisterConfig(key, uniqueID)
-			err = cbSuite.Close()
-			if err != nil {
-				return err
-			}
-			return nil
-		}),
-	}
-}
-
-// keep consistent when initialising the circuit breaker suit and updating
-// the circuit breaker policy.
-func genServiceCBKeyWithRPCInfo(rpcInfo rpcinfo.RPCInfo) string {
-	if rpcInfo == nil {
-		return ""
-	}
-	return genServiceCBKey(rpcInfo.To().ServiceName(), rpcInfo.To().Method())
-}
-
-func genServiceCBKey(toService, method string) string {
-	sum := len(toService) + len(method) + 2
-	var buf strings.Builder
-	buf.Grow(sum)
-	buf.WriteString(toService)
-	buf.WriteByte('/')
-	buf.WriteString(method)
-	return buf.String()
-}
-
-func initCircuitBreaker(configType consul.ConfigType, key, dest, src string,
-	consulClient consul.Client, uniqueID int64,
-) *circuitbreak.CBSuite {
-	cb := circuitbreak.NewCBSuite(genServiceCBKeyWithRPCInfo)
-	lcb := utils.ThreadSafeSet{}
-
-	onChangeCallback := func(data string, parser consul.ConfigParser) {
-		set := utils.Set{}
-		configs := map[string]circuitbreak.CBConfig{}
-		err := parser.Decode(configType, data, &configs)
-		if err != nil {
-			klog.Warnf("[consul] %s client consul circuit breaker: unmarshal data %s failed: %s, skip...", key, data, err)
-			return
-		}
-
-		for method, config := range configs {
-			set[method] = true
-			key := genServiceCBKey(dest, method)
-			cb.UpdateServiceCBConfig(key, config)
-		}
-
-		for _, method := range lcb.DiffAndEmplace(set) {
-			key := genServiceCBKey(dest, method)
-			// For deleted method configs, set to default policy
-			cb.UpdateServiceCBConfig(key, circuitbreak.GetDefaultCBConfig())
-		}
-	}
-
-	consulClient.RegisterConfigCallback(key, uniqueID, onChangeCallback)
-
-	return cb
+	return configclient.WithCircuitBreaker(dest, src, consulClient, uniqueID, opts)
 }
