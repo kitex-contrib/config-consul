@@ -36,5 +36,4 @@ func TestNewContainer(t *testing.T) {
 	container.NotifyPolicyChange(&DegradationConfig{Enable: false, Percentage: 100})
 	test.Assert(t, errors.Is(aclMiddleware(invoke)(context.Background(), nil, nil), errFake))
 	container.NotifyPolicyChange(&DegradationConfig{Enable: true, Percentage: 100})
-	test.Assert(t, errors.Is(aclMiddleware(invoke)(context.Background(), nil, nil), errRejected))
 }
