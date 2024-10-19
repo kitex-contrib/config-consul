@@ -15,8 +15,8 @@
 package consul
 
 import (
+	utils "github.com/cloudwego-contrib/cwgo-pkg/config/common"
 	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
-	"github.com/cloudwego-contrib/cwgo-pkg/config/common"
 )
 
 type ConfigType = utils.ConfigType
