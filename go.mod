@@ -1,6 +1,8 @@
 module github.com/kitex-contrib/config-consul
 
-go 1.20
+go 1.21
+
+toolchain go1.21.12
 
 require (
 	github.com/cloudwego/kitex v0.8.0
