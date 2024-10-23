@@ -102,9 +102,8 @@ github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
-github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 h1:FKHo8hFI3A+7w0aUQuYXQ+6EN5stWmeY/AZqtM8xk9k=
 github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8/go.mod h1:K1liHPHnj73Fdn/EKuT8nrFqBihUSKXoLYU0BuatOYo=
@@ -246,10 +245,10 @@ github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 h1:nn5Wsu0esKSJiIVhscUt
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
-github.com/smx-Morgan/cwgo-pkg/config/common v0.0.0-20241016000926-d56ef7e0f578 h1:Iknd91xaXpAl8j60b0k301dYBUHMqymvwLc26z7408I=
-github.com/smx-Morgan/cwgo-pkg/config/common v0.0.0-20241016000926-d56ef7e0f578/go.mod h1:lVIAupiOabEhRlmMTGh2XZDFUn6tWRDAYcWpOGoNMIM=
-github.com/smx-Morgan/cwgo-pkg/config/consul v0.0.0-20241016000926-d56ef7e0f578 h1:l3x5Bg0fnWFP0um5Nhq/GhVYt5NvnAXZcuR2Lx49uFk=
-github.com/smx-Morgan/cwgo-pkg/config/consul v0.0.0-20241016000926-d56ef7e0f578/go.mod h1:5sgxK7bZrHT15sxKauy01p+yE/00RQW4unet2vBg+oY=
+github.com/smx-Morgan/cwgo-pkg/config/common v0.0.0-20241022123807-97b427526bb6 h1:oJo7frKAvT8G8NZp0YP54Z/U+7RJj6t7MXDGRLy5SYY=
+github.com/smx-Morgan/cwgo-pkg/config/common v0.0.0-20241022123807-97b427526bb6/go.mod h1:PEOhwaM6va1ahPXEoUh+P9pDFBkHIr/I/3LOPoI0nMw=
+github.com/smx-Morgan/cwgo-pkg/config/consul v0.0.0-20241022123807-97b427526bb6 h1:ndV3gj18f+O18/BwR/uZuqQOrBTj0yjcy/AyU72nYGo=
+github.com/smx-Morgan/cwgo-pkg/config/consul v0.0.0-20241022123807-97b427526bb6/go.mod h1:3BIZ7zQPO7ZWhugMHXmASbvxGgR9C08OxU+FpaV1yE8=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=

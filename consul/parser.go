@@ -15,27 +15,26 @@
 package consul
 
 import (
-	utils "github.com/cloudwego-contrib/cwgo-pkg/config/common"
 	"github.com/cloudwego-contrib/cwgo-pkg/config/consul/consul"
 )
 
-type ConfigType = utils.ConfigType
+type ConfigType = consul.ConfigType
 
 const (
-	JSON                      ConfigType = utils.JSON
-	YAML                      ConfigType = utils.YAML
-	HCL                       ConfigType = utils.HCL
-	ConsulDefaultConfigAddr              = consul.ConsulDefaultConfigAddr
-	ConsulDefaultConfiGPrefix            = consul.ConsulDefaultConfiGPrefix
-	ConsulDefaultTimeout                 = consul.ConsulDefaultTimeout
-	ConsulDefaultDataCenter              = consul.ConsulDefaultDataCenter
-	ConsulDefaultClientPath              = consul.ConsulDefaultClientPath
-	ConsulDefaultServerPath              = consul.ConsulDefaultServerPath
+	JSON                      = consul.JSON
+	YAML                      = consul.YAML
+	HCL                       = consul.HCL
+	ConsulDefaultConfigAddr   = consul.ConsulDefaultConfigAddr
+	ConsulDefaultConfiGPrefix = consul.ConsulDefaultConfiGPrefix
+	ConsulDefaultTimeout      = consul.ConsulDefaultTimeout
+	ConsulDefaultDataCenter   = consul.ConsulDefaultDataCenter
+	ConsulDefaultClientPath   = consul.ConsulDefaultClientPath
+	ConsulDefaultServerPath   = consul.ConsulDefaultServerPath
 )
 
 // CustomFunction use for customize the config parameters.
 type CustomFunction = consul.CustomFunction
 
-type ConfigParamConfig = utils.ConfigParamConfig
+type ConfigParamConfig = consul.ConfigParamConfig
 
-type ConfigParser = utils.ConfigParser
+type ConfigParser = consul.ConfigParser
