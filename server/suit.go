@@ -18,40 +18,13 @@ import (
 	"github.com/kitex-contrib/config-consul/consul"
 	"github.com/kitex-contrib/config-consul/utils"
 
-	"github.com/cloudwego/kitex/server"
-)
-
-const (
-	limiterConfigName = "limit"
+	configserver "github.com/cloudwego-contrib/cwgo-pkg/config/consul/server"
 )
 
 // ConsulServerSuite consul server config suite, configure limiter config dynamically from consul.
-type ConsulServerSuite struct {
-	uid          int64
-	consulClient consul.Client
-	service      string
-	opts         utils.Options
-}
+type ConsulServerSuite = configserver.ConsulServerSuite
 
 // NewSuite service is the destination service.
-func NewSuite(service string, cli consul.Client,
-	opts ...utils.Option,
-) *ConsulServerSuite {
-	uid := consul.AllocateUniqueID()
-	su := &ConsulServerSuite{
-		uid:          uid,
-		service:      service,
-		consulClient: cli,
-	}
-	for _, opt := range opts {
-		opt.Apply(&su.opts)
-	}
-	return su
-}
-
-// Options return a list server.Option
-func (s *ConsulServerSuite) Options() []server.Option {
-	opts := make([]server.Option, 0, 2)
-	opts = append(opts, WithLimiter(s.service, s.consulClient, s.uid, s.opts))
-	return opts
+func NewSuite(service string, cli consul.Client, opts ...utils.Option) *ConsulServerSuite {
+	return configserver.NewSuite(service, cli, opts...)
 }
